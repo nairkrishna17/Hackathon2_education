@@ -1,0 +1,113 @@
+import java.util.*;
+
+public class SmartStatesAndCapitalsQuiz {
+    public static void main(String[] args) {
+        // Create a list of questions
+        List<Question> questions = new ArrayList<>();
+        questions.add(new Question("Odisha", "Bhubaneswar", Arrays.asList("Bhubaneswar", "Kolkata", "Raipur", "Visakhapatnam")));
+        questions.add(new Question("Kerala", "Thiruvananthapuram", Arrays.asList("Thiruvananthapuram", "Kochi", "Bengaluru", "Chennai")));
+        questions.add(new Question("Karnataka", "Bengaluru", Arrays.asList("Bengaluru", "Hyderabad", "Chennai", "Pune")));
+        questions.add(new Question("Maharashtra", "Mumbai", Arrays.asList("Mumbai", "Nagpur", "Pune", "Goa")));
+        questions.add(new Question("Tamil Nadu", "Chennai", Arrays.asList("Chennai", "Coimbatore", "Madurai", "Salem")));
+
+        // Shuffle the questions to randomize
+        Collections.shuffle(questions);
+
+        Scanner scanner = new Scanner(System.in);
+        int score = 0;
+
+        // Store user answers and correct answers for later review
+        List<UserResponse> responses = new ArrayList<>();
+
+        // Quiz loop - ask all questions first
+        for (Question question : questions) {
+            System.out.println("What is the capital of " + question.getState() + "?");
+            List<String> options = question.getOptions();
+            Collections.shuffle(options); // Shuffle the answer options for added challenge
+
+            // Display the options
+            for (int i = 0; i < options.size(); i++) {
+                System.out.println((i + 1) + ". " + options.get(i));
+            }
+
+            // Get user input
+            int userChoice = -1;
+            while (userChoice < 1 || userChoice > options.size()) {
+                System.out.print("Please enter the number corresponding to your answer: ");
+                try {
+                    userChoice = Integer.parseInt(scanner.nextLine());
+                } catch (NumberFormatException e) {
+                    System.out.println("That doesn't seem to be a valid number. Try again.");
+                }
+            }
+
+            // Store the response
+            responses.add(new UserResponse(question, options.get(userChoice - 1)));
+        }
+
+        // Now review answers after the quiz is complete
+        System.out.println("\n--- Quiz Review ---");
+        for (UserResponse response : responses) {
+            String correctAnswer = response.getQuestion().getAnswer();
+            String userAnswer = response.getUserAnswer();
+            System.out.println("State: " + response.getQuestion().getState());
+            System.out.println("Your answer: " + userAnswer);
+            if (userAnswer.equalsIgnoreCase(correctAnswer)) {
+                System.out.println("Correct! Well done.");
+                score++;
+            } else {
+                System.out.println("Incorrect. The correct answer is " + correctAnswer + ".");
+            }
+            System.out.println();
+        }
+
+        // Display the final score
+        System.out.println("You've completed the quiz! Your total score is: " + score + " out of " + questions.size() + ".");
+        
+        scanner.close(); // Don't forget to close the scanner to avoid resource leaks
+    }
+}
+
+// The Question class models each quiz question with its options and correct answer
+class Question {
+    private String state;
+    private String answer;
+    private List<String> options;
+
+    public Question(String state, String answer, List<String> options) {
+        this.state = state;
+        this.answer = answer;
+        this.options = new ArrayList<>(options); // Copy the options to avoid accidental modification
+    }
+
+    public String getState() {
+        return state;
+    }
+
+    public String getAnswer() {
+        return answer;
+    }
+
+    public List<String> getOptions() {
+        return options;
+    }
+}
+
+// Class to store user responses
+class UserResponse {
+    private Question question;
+    private String userAnswer;
+
+    public UserResponse(Question question, String userAnswer) {
+        this.question = question;
+        this.userAnswer = userAnswer;
+    }
+
+    public Question getQuestion() {
+        return question;
+    }
+
+    public String getUserAnswer() {
+        return userAnswer;
+    }
+}
